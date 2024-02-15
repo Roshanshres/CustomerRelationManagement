@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.forms import inlineformset_factory
 from .models import *
 from .forms import OrderForm
+from .filters import OderFilter
+
 
 
 
@@ -14,6 +17,7 @@ from .forms import OrderForm
 #     return render(request, 'accounts/dashboard.html', context)
 
 def home(request):
+
     orders = Order.objects.all()
     customers = Customer.objects.all()
 
@@ -42,23 +46,34 @@ def products(request):
 def customer(request, pk_test):
     customer = Customer.objects.get(id=pk_test)
 
+
     orders =customer.order_set.all() #child from models
     orders_count = orders.count()
 
-    context = {'customer': customer,'orders': orders, 'orders_count': orders_count}
+    myFilter = OderFilter(request.GET, queryset=orders)
+    orders = myFilter.qs
+
+    context = {'customer': customer,'orders': orders, 'orders_count': orders_count, 'myFilter':myFilter}
     return render(request, 'accounts/customers.html', context)
 
 def createOrder(request, pk):
-    customer = customer.objects.get(id=pk)
-    form = OrderForm()
+    customer = Customer.objects.get(id=pk)
+
+#variable name
+    OrderFormSet = inlineformset_factory(Customer, Order , fields=('product', 'status'), extra = 10)#(parentmodel, child model,instance  )
+    customer = Customer.objects.get(id=pk)
+    formset = OrderFormSet(queryset=Order.objects.none(), instance=customer)
+
+    #form = OrderForm(initial= {'customer': customer}) #mdoels bata ra  mathi create abta 
     if request.method == 'POST':
         # print('Printing POST:',request.POST )
-        form = OrderForm(request.POST)
-        if form.is_valid():
-            form.save()
+        # form = OrderForm(request.POST)
+        formset = OrderFormSet(request.POST,instance=customer)
+        if formset.is_valid():
+            formset.save()
             return redirect('/')
               
-    context = {'form': form}
+    context = {'formset': formset}
 
     return render(request, 'accounts/order_form.html', context)
 
