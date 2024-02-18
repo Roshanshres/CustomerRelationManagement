@@ -52,7 +52,7 @@
             <table class="table table-sm">
                 <tr>
                     <th> Product</th>
-                    <th> Category</th>
+                    <th> Notepy</th>
                     <th> Date Ordered</th>
                     <th> Status</th>
                     <th> Update</th>
@@ -62,7 +62,7 @@
 
                 <tr>
                     <th>{{order.product}}</th>
-                    <th>{{order.product.category}}</th>
+                    <th>{{order.note}}</th>
                     <th>{{order.date_created}}</th>
                     <th>{{order.status}}</th>
                     <th><a class ="btn btn-sm btn-info" href="{% url 'update_order' order.id %}">Update</a></th>
