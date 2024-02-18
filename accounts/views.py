@@ -2,11 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.forms import inlineformset_factory
 from .models import *
-from .forms import OrderForm
+from .forms import OrderForm,CreateUserForm
 from .filters import OderFilter
-
-
-
+from django.contrib.auth.forms import UserCreationForm
 
 # Create your views here.
 # def home(request):
@@ -15,6 +13,25 @@ from .filters import OderFilter
 #     context = {'orders': 'orders', 'customers':'customers'}
    
 #     return render(request, 'accounts/dashboard.html', context)
+
+def registerPage(request):
+    form = CreateUserForm()
+    context = {'form': form}
+
+    if request.method =='POST':
+        form=CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+
+    return render(request, 'accounts/register.html', context)
+
+
+def loginPage(request):
+
+    form = CreateUserForm()
+    context ={'form': form}
+    return render(request, 'accounts/login.html', context)
 
 def home(request):
 
@@ -45,7 +62,6 @@ def products(request):
 
 def customer(request, pk_test):
     customer = Customer.objects.get(id=pk_test)
-
 
     orders =customer.order_set.all() #child from models
     orders_count = orders.count()
