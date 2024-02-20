@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     'accounts',
     'django_filters',
-    
+        
 ]
 
 MIDDLEWARE = [
