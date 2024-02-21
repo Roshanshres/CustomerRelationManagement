@@ -19,41 +19,45 @@ from django.contrib import messages
 #     return render(request, 'accounts/dashboard.html', context)
 
 def registerPage(request):
-    form = CreateUserForm()
-    context = {'form': form}
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:     
+        form = CreateUserForm()
+        context = {'form': form}
 
-    if request.method =='POST':
-        form=CreateUserForm(request.POST)
-        if form.is_valid():
-            form.save()
-            user = form.cleaned_data.get('username')
+        if request.method =='POST':
+            form=CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save()
+                user = form.cleaned_data.get('username')
 
-            messages.success(request, 'Account was created for ' + user)
+                messages.success(request, 'Account was created for ' + user)
 
-            return redirect('login')
+                return redirect('login')
 
 
     return render(request, 'accounts/register.html', context)
 
 
 def loginPage(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:   
+
+        if request.method == 'POST':
+            username =request.POST.get('username')
+            password = request.POST.get('password') 
+            
+
+            user = authenticate(request, username = username, password=password )
+        
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+            else:
+                messages.info(request, 'Username or password is incorrect')
 
     form = CreateUserForm()
-
-    if request.method == 'POST':
-        username =request.POST.get('username')
-        password = request.POST.get('password') 
-        
-
-        user = authenticate(request, username = username, password=password )
-     
-        if user is not None:
-            login(request, user)
-            return redirect('home')
-        else:
-            messages.info(request, 'Username or password is incorrect')
-
-    
     context ={'form': form}
     return render(request, 'accounts/login.html', context)
 
@@ -85,11 +89,18 @@ def home(request):
     return render(request, 'accounts/dashboard.html', context)
 
 @login_required(login_url='login')
+def userPage(request):
+    context ={}
+    return render(request, 'accounts/user.html', context)
+
+@login_required(login_url='login')
 def products(request):
     products = Product.objects.all()    
     return render (request, 'accounts/products.html',{'products':products})
     #return render(request, 'accounts/products.html')
 
+
+@login_required(login_url='login')
 def customer(request, pk_test):
     customer = Customer.objects.get(id=pk_test)
 
@@ -102,6 +113,7 @@ def customer(request, pk_test):
     context = {'customer': customer,'orders': orders, 'orders_count': orders_count, 'myFilter':myFilter}
     return render(request, 'accounts/customers.html', context)
 
+@login_required(login_url='login')
 def createOrder(request, pk):
     customer = Customer.objects.get(id=pk)
 
@@ -124,6 +136,7 @@ def createOrder(request, pk):
     return render(request, 'accounts/order_form.html', context)
 
 
+@login_required(login_url='login')
 def updateOrder(request, pk):
 
     order = Order.objects.get(id=pk)
@@ -140,6 +153,7 @@ def updateOrder(request, pk):
     context = {'form': form}
     return render(request,'accounts/order_form.html', context)
 
+@login_required(login_url='login')
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == "POST":
