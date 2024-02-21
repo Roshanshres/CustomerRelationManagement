@@ -8,6 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .decorators import unauthenticated_user
 
 from django.contrib import messages
 # Create your views here.
@@ -38,24 +39,21 @@ def registerPage(request):
 
     return render(request, 'accounts/register.html', context)
 
+@unauthenticated_user
+def loginPage(request):      
 
-def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:   
-
-        if request.method == 'POST':
-            username =request.POST.get('username')
-            password = request.POST.get('password') 
-            
-
-            user = authenticate(request, username = username, password=password )
+    if request.method == 'POST':
+        username =request.POST.get('username')
+        password = request.POST.get('password') 
         
-            if user is not None:
-                login(request, user)
-                return redirect('home')
-            else:
-                messages.info(request, 'Username or password is incorrect')
+
+        user = authenticate(request, username = username, password=password )
+    
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Username or password is incorrect')
 
     form = CreateUserForm()
     context ={'form': form}
