@@ -19,7 +19,7 @@ from django.contrib import messages
    
 #     return render(request, 'accounts/dashboard.html', context)
 
-@unauthenticated_user
+
 def registerPage(request):
         
     form = CreateUserForm()
@@ -108,7 +108,7 @@ def customer(request, pk_test):
     context = {'customer': customer,'orders': orders, 'orders_count': orders_count, 'myFilter':myFilter}
     return render(request, 'accounts/customers.html', context)
 
-@unauthenticated_user
+@login_required(login_url='login')
 def createOrder(request, pk):
     customer = Customer.objects.get(id=pk)
 
@@ -131,7 +131,7 @@ def createOrder(request, pk):
     return render(request, 'accounts/order_form.html', context)
 
 
-@unauthenticated_user
+@login_required(login_url='login')
 def updateOrder(request, pk):
 
     order = Order.objects.get(id=pk)
@@ -148,7 +148,7 @@ def updateOrder(request, pk):
     context = {'form': form}
     return render(request,'accounts/order_form.html', context)
 
-@unauthenticated_user
+@login_required(login_url='login')
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
     if request.method == "POST":
