@@ -61,7 +61,7 @@ def logoutUser(request):
     logout (request)
     return redirect('login')
 
-@unauthenticated_user
+
 def home(request):
 
     orders = Order.objects.all()
