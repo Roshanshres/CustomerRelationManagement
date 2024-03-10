@@ -19,7 +19,6 @@ from django.contrib import messages
    
 #     return render(request, 'accounts/dashboard.html', context)
 
-
 def registerPage(request):
         
     form = CreateUserForm()
@@ -54,7 +53,7 @@ def loginPage(request):
             messages.info(request, 'Username or password is incorrect')
 
     form = CreateUserForm()
-    context ={'form': form}
+    context = {'form': form}
     return render(request, 'accounts/login.html', context)
 
 
